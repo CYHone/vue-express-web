@@ -1,72 +1,92 @@
 <script setup>
-import { ref } from 'vue';
-
-const username = ref('');
-const password = ref('');
-const agree = ref(false); // 如果默认未同意，设置为false
-</script>
-
+  import { ref, defineExpose } from 'vue';
+  
+  const userInfo = ref({
+    account: '1311111111',
+    password: '123456',
+    agree: true
+  });
+  
+  const rules = {
+    account: [
+      { required: true, message: '用户名不能为空' }
+    ],
+    password: [
+      { required: true, message: '密码不能为空' },
+      { min: 6, max: 14, message: '密码长度要求6-14个字符' }
+    ],
+    agree: [
+      {
+        validator: (rule, val, callback) => {
+          return val ? callback() : callback(new Error('请先同意协议'));
+        }
+      }
+    ]
+  };
+  
+  defineExpose({ userInfo, rules });
+  </script>
+  
 
 <template>
-  <div>
-    <header class="login-header">
-      <div class="container m-top-20">
-        <h1 class="logo">
-          <RouterLink to="/">卓越快递</RouterLink>
-        </h1>
-        <RouterLink class="entry" to="/">
-          进入网站首页
-          <i class="iconfont icon-angle-right"></i>
-          <i class="iconfont icon-angle-right"></i>
-        </RouterLink>
-      </div>
-    </header>
-
-    <section class="login-section">
-      <div class="wrapper">
-        <nav>
-          <a href="javascript:;">用户登录</a>
-        </nav>
-        <div class="account-box">
-          <div class="form">
-
-            <el-form label-position="right" label-width="60px" status-icon>
-                <el-form-item label="账户">
-                    <el-input v-model="username" placeholder="请输入账户名"/>
+    <div>
+      <header class="login-header">
+        <div class="container m-top-20">
+          <h1 class="logo">
+            <RouterLink to="/">卓越快递</RouterLink>
+          </h1>
+          <RouterLink class="entry" to="/">
+            进入网站首页
+            <i class="iconfont icon-angle-right"></i>
+            <i class="iconfont icon-angle-right"></i>
+          </RouterLink>
+        </div>
+      </header>
+  
+      <section class="login-section">
+        <div class="wrapper">
+          <nav>
+            <a href="javascript:;">用户登录</a>
+          </nav>
+          <div class="account-box">
+            <div class="form">
+              <el-form ref="formRef" :model="userInfo" :rules="rules" status-icon>
+                <el-form-item prop="account" label="账户">
+                  <el-input v-model="userInfo.account" />
                 </el-form-item>
-                <el-form-item label="密码">
-                    <el-input v-model="password" type="password" placeholder="请输入密码"/>
+                <el-form-item prop="password" label="密码">
+                  <el-input v-model="userInfo.password" />
                 </el-form-item>
-                <el-form-item label-width="22px">
-                    <el-checkbox v-model="agree" size="large">
+                <el-form-item prop="agree" label-width="22px">
+                  <el-checkbox v-model="userInfo.agree" size="large">
                     我已同意隐私条款和服务条款
-                    </el-checkbox>
+                  </el-checkbox>
                 </el-form-item>
                 <el-button size="large" class="subBtn">点击登录</el-button>
-            </el-form>
-
-
+              </el-form>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <footer class="login-footer">
-      <div class="container">
-        <p>
-          <a href="javascript:;">关于我们</a>
-          <a href="javascript:;">帮助中心</a>
-          <a href="javascript:;">售后服务</a>
-          <a href="javascript:;">配送与验收</a>
-          <a href="javascript:;">商务合作</a>
-          <a href="javascript:;">搜索推荐</a>
-          <a href="javascript:;">友情链接</a>
-        </p>
-        <p>CopyRight &copy; 卓越快递</p>
-      </div>
-    </footer>
-  </div>
-</template>
+      </section>
+  
+      <footer class="login-footer">
+        <div class="container">
+          <p>
+            <a href="javascript:;">关于我们</a>
+            <a href="javascript:;">帮助中心</a>
+            <a href="javascript:;">售后服务</a>
+            <a href="javascript:;">配送与验收</a>
+            <a href="javascript:;">商务合作</a>
+            <a href="javascript:;">搜索推荐</a>
+            <a href="javascript:;">友情链接</a>
+          </p>
+          <p>CopyRight &copy; 卓越快递</p>
+        </div>
+      </footer>
+    </div>
+  </template>
+  
+  
 
 <style scoped lang='scss'>
 .login-header {
