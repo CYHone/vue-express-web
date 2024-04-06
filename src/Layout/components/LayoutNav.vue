@@ -8,7 +8,8 @@
       
       <!-- 将列表样式设置为无，这样就不会显示小圆点了 -->
       <ul  style="list-style-type: none;">
-        <template v-if="true">
+<!-- 多模板渲染 区分登录状态和非登录状态-->
+        <template v-if="false">
 
           <li>
             <!--  表示点击后执行 JavaScript 代码，但未指定具体的操作 -->
@@ -34,7 +35,7 @@
         </template>
 
         <template v-else>
-          <li><a href="javascript:;">请先登录</a></li>
+          <li><a href="javascript:;" @click="$router.push('/login')">请先登录</a></li>
           <li><a href="javascript:;">帮助中心</a></li>
           <li><a href="javascript:;">关于我们</a></li>
         </template>
