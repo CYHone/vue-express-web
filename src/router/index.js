@@ -14,6 +14,11 @@ const router = createRouter({
       name:'登录',
       component:() => import('@/login/index.vue')
      },
+     {
+      path:'/order',
+      name:'下单',
+      component:() => import('@/order/orderView.vue')
+     },
   ]
 })
 

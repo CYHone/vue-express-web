@@ -12,7 +12,7 @@
             <RouterLink to="/" class="nav-link">首页</RouterLink>
           </li>
           <li>
-            <RouterLink to="/" class="nav-link">快递下单</RouterLink>
+            <RouterLink to="/order" class="nav-link">快递下单</RouterLink>
           </li>
           <li>
             <RouterLink to="/" class="nav-link">查询物流</RouterLink>
