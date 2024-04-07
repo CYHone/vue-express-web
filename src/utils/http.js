@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/el-message.css'
 
 const httpInstance = axios.create({
-    //baseURL:'http://',
+    baseURL:'http://',
     timeout:5000
 })
 

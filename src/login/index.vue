@@ -1,24 +1,24 @@
 <script setup>
   // 引入Vue相关库和组件
   import { ref, defineExpose } from 'vue';
-  import { loginAPI } from '@/apis/user'; // 导入登录请求的API方法
+  import { loginAPI,useAuthStore } from '@/apis/user'; // 使用pinia 就不导入登录请求的API方法
   import { ElMessage } from 'element-plus'; // 导入Element Plus的消息组件
   import 'element-plus/theme-chalk/el-message.css'; // 导入Element Plus的消息组件样式
   import { useRouter } from 'vue-router'; // 导入Vue Router的路由实例
 
   // 使用ref创建响应式数据对象，用于存储用户输入的账户信息、密码信息和同意协议的状态
   const userInfo = ref({
-    account: '1311111111', // 默认账户
-    password: '123456',    // 默认密码
-    agree: true            // 默认同意协议
+    account: '1311111111',
+    password: '123456',    
+    agree: true,
   });
 
   // 定义表单验证规则，使用对象字面量方式，包含账户、密码和同意协议的规则
   const rules = {
-    account: [{ required: true, message: '用户名不能为空' }], // 账户规则，必填项
+    account: [{ required: true, message: '用户名不能为空' }], 
     password: [
-      { required: true, message: '密码不能为空' }, // 密码规则，必填项
-      { min: 6, max: 14, message: '密码长度要求6-14个字符' } // 密码长度规则
+      { required: true, message: '密码不能为空' }, 
+      { min: 6, max: 14, message: '密码长度要求6-14个字符' } 
     ],
     agree: [
       {
@@ -33,6 +33,7 @@
   // 使用ref创建一个响应式对象，用于存储表单实例的引用
   const formRef = ref(null); // 表单实例引用，默认为null
   const router = useRouter(); // 获取Vue Router的路由实例
+  const authStore = useAuthStore(); //存储的tokrn
 
   // 定义登录函数，用于处理登录逻辑
   const doLogin = () => {
@@ -40,21 +41,33 @@
     formRef.value.validate(async (valid) => {
       // 在回调函数中处理表单验证结果
       if (valid) { // 如果表单验证通过
+        
         // 获取用户输入的账户信息和密码信息
         const { account, password } = userInfo.value;
-        // 调用登录API发送登录请求，传入账户和密码信息，使用await等待返回结果
-        const res = await loginAPI({ account, password });
-        console.log(res); // 打印登录请求返回的结果
-        // 弹出成功提示消息
+
+          // 调用登录API发送登录请求，传入账户和密码信息，使用await等待返回结果
+         const res = await loginAPI({ account, password});
+         console.log(res); // 打印登录请求返回的结果
+         // 存储 token
+         authStore.setToken(res.data.token);
+         // 存储 account
+         authStore.setAccount(userInfo.value.account);
+
+         console.log(authStore.token)
+         console.log(authStore.account)
+
+       // 存储 token（这里简单地存储在 localStorage 中，实际应用中可根据需求进行调整）
+       //localStorage.setItem('token', res.data.token);
+         //console.log(res.data.token);
+        
         ElMessage({ type: 'success', message: '登录成功' });
-        // 使用路由实例的replace方法跳转到首页
         router.replace({ path: '/' });
       }
     });
   };
 
-  // 使用defineExpose方法暴露响应式数据和方法，以便在模板中使用
-  defineExpose({ userInfo, rules, formRef, doLogin });
+  // // 使用defineExpose方法暴露响应式数据和方法，以便在模板中使用
+  // defineExpose({ userInfo, rules, formRef, doLogin });
 </script>
 
 

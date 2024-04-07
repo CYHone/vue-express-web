@@ -1,5 +1,19 @@
 <script setup>
+import { useAuthStore } from '@/apis/user'; 
+import { useRouter } from 'vue-router';
 
+// 使用 account 和 token
+const authStore = useAuthStore();
+const router = useRouter(); // 将 useRouter 移至 setup 外部，确保在 setup 内正确使用
+
+const confirm = () => {
+  console.log('用户要退出登录了');
+  // 退出登录业务实现
+  // 1. 清除用户信息 触发 action
+  authStore.cleanUserAuthStore();
+  // 2. 跳转到登录页
+  router.push('/login'); // 确保 router 对象正确解析
+}
 </script>
 
 <template>
@@ -9,7 +23,7 @@
       <!-- 将列表样式设置为无，这样就不会显示小圆点了 -->
       <ul  style="list-style-type: none;">
 <!-- 多模板渲染 区分登录状态和非登录状态-->
-        <template v-if="false">
+        <template v-if="authStore.token">
 
           <li>
             <!--  表示点击后执行 JavaScript 代码，但未指定具体的操作 -->
@@ -18,11 +32,11 @@
             </a>
           </li>
             <!-- 用户名 -->
-          <li><a href="javascript:;">张三</a></li>
+          <li><a href="javascript:;">{{ authStore.account }}</a></li>
 
           <li>
             <!-- Vue 组件，用于显示确认框 -->
-            <el-popconfirm title="确认退出吗?" confirm-button-text="确认" cancel-button-text="取消">
+            <el-popconfirm @confirm="confirm" title="确认退出吗?" confirm-button-text="确认" cancel-button-text="取消">
               <template #reference>
                 <a href="javascript:;">退出登录</a>
               </template>

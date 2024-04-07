@@ -15,7 +15,7 @@
             <RouterLink to="/order" class="nav-link">快递下单</RouterLink>
           </li>
           <li>
-            <RouterLink to="/" class="nav-link">查询物流</RouterLink>
+            <RouterLink to="/inquire" class="nav-link">查询物流</RouterLink>
           </li>
           <li>
             <RouterLink to="/" class="nav-link">网点查询</RouterLink>
