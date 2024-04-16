@@ -12,12 +12,22 @@ const router = createRouter({
      {
       path:'/login',
       name:'登录',
-      component:() => import('@/login/index.vue')
+      component:() => import('@/components/login.vue')
      },
      {
-      path:'/order',
-      name:'下单',
-      component:() => import('@/order/orderView.vue')
+      path:'/register',
+      name:'注册',
+      component:() => import('@/components/register.vue')
+     },
+     {
+      path:'/shipment',
+      name:'运单',
+      component:() => import('@/components/createShipment.vue')
+     },
+     {
+      path:'/package',
+      name:'包裹',
+      component:() => import('@/components/createPackage.vue')
      },
      {
       path:'/inquire',

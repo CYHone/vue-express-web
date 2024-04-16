@@ -12,7 +12,7 @@
             <RouterLink to="/" class="nav-link">首页</RouterLink>
           </li>
           <li>
-            <RouterLink to="/order" class="nav-link">快递下单</RouterLink>
+            <RouterLink to="/shipment" class="nav-link">快递下单</RouterLink>
           </li>
           <li>
             <RouterLink to="/inquire" class="nav-link">查询物流</RouterLink>
@@ -62,6 +62,7 @@
           font-size: 30px; /* 调整导航菜单链接字体大小 */
           color: #333;
           transition: color 0.3s;
+          text-decoration: none;
   
           &:hover {
             color: skyblue;

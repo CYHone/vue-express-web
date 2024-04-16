@@ -1,21 +1,83 @@
-<!-- <script setup>
+<template>
+  <div>
+    <header class="login-header">
+      <div class="container">
+        <h1 class="logo">
+          <RouterLink to="/">卓越快递</RouterLink>
+        </h1>
+        <RouterLink class="entry" to="/">
+          进入网站首页
+        </RouterLink>
+      </div>
+    </header>
+
+    <section class="login-section">
+      <div class="wrapper">
+        <nav>
+          <a href="javascript:;">用户登录</a>
+        </nav>
+        <div class="account-box">
+          <div class="form">
+            <el-form ref="formRef" :model="userInfo" :rules="rules" status-icon>
+              <el-form-item prop="email" label="账号">
+                <el-input v-model="userInfo.email" placeholder="请输入账号" />
+              </el-form-item>
+              <el-form-item prop="password" label="密码">
+                <el-input v-model="userInfo.password" placeholder="请输入密码" show-password />
+              </el-form-item>
+              <el-form-item prop="agree" label-width="22px">
+                <el-checkbox v-model="userInfo.agree" size="large">
+                  我已同意隐私条款和服务条款
+                </el-checkbox>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button type="success" @click="doLogin" style="width: 150px; height: 40px; font-size: 18px;">登录</el-button>
+                <el-button type="primary" @click="doRegister" style="width: 150px; height: 40px; font-size: 18px;">注册</el-button>
+              </el-form-item>
+
+            </el-form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="login-footer">
+      <div class="container">
+        <p>
+          <a href="javascript:;">关于我们</a>
+          <a href="javascript:;">帮助中心</a>
+          <a href="javascript:;">售后服务</a>
+          <a href="javascript:;">配送与验收</a>
+          <a href="javascript:;">商务合作</a>
+          <a href="javascript:;">搜索推荐</a>
+          <a href="javascript:;">友情链接</a>
+        </p>
+        <p>CopyRight &copy; 卓越快递</p>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup>
   // 引入Vue相关库和组件
   import { ref, defineExpose } from 'vue';
-  import { loginAPI,useAuthStore } from '@/apis/user'; // 使用pinia 就不导入登录请求的API方法
+  // import { loginAPI,useAuthStore } from '@/apis/user'; // 使用pinia 就不导入登录请求的API方法
   import { ElMessage } from 'element-plus'; // 导入Element Plus的消息组件
   import 'element-plus/theme-chalk/el-message.css'; // 导入Element Plus的消息组件样式
   import { useRouter } from 'vue-router'; // 导入Vue Router的路由实例
+  import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 
   // 使用ref创建响应式数据对象，用于存储用户输入的账户信息、密码信息和同意协议的状态
   const userInfo = ref({
-    account: '1311111111',
-    password: '123456',    
+    email: '',
+    password: '', // 初始值为空字符串
     agree: true,
   });
 
   // 定义表单验证规则，使用对象字面量方式，包含账户、密码和同意协议的规则
   const rules = {
-    account: [{ required: true, message: '用户名不能为空' }], 
+    email: [{ required: true, message: '用户名不能为空' }], 
     password: [
       { required: true, message: '密码不能为空' }, 
       { min: 6, max: 14, message: '密码长度要求6-14个字符' } 
@@ -33,101 +95,52 @@
   // 使用ref创建一个响应式对象，用于存储表单实例的引用
   const formRef = ref(null); // 表单实例引用，默认为null
   const router = useRouter(); // 获取Vue Router的路由实例
-  const authStore = useAuthStore(); //存储的tokrn
+  // const authStore = useAuthStore(); //存储的tokrn
 
-  // 定义登录函数，用于处理登录逻辑
+  const doRegister = () =>{
+    router.push({ path: '/register' }); // 使用router.push跳转页面
+  }
+
   const doLogin = () => {
-    // 调用表单实例的validate方法进行表单验证，传入一个回调函数
     formRef.value.validate(async (valid) => {
-      // 在回调函数中处理表单验证结果
-      if (valid) { // 如果表单验证通过
-        
-        // 获取用户输入的账户信息和密码信息
-        const { account, password } = userInfo.value;
+      if (valid) {
+        const { email, password } = userInfo.value;
+        const requestData = {
+          email: email, // 使用正确的变量名
+          password: password,
+        };
 
-          // 调用登录API发送登录请求，传入账户和密码信息，使用await等待返回结果
-         const res = await loginAPI({ account, password});
-         console.log(res); // 打印登录请求返回的结果
-         // 存储 token
-         authStore.setToken(res.data.token);
-         // 存储 account
-         authStore.setAccount(userInfo.value.account);
+        axios.post('customer/login', requestData)
+          .then(response => {
+            console.log(response.data);
+            if (response.data.code === 200) {
+              console.log('登录成功', response.data);
 
-         console.log(authStore.token)
-         console.log(authStore.account)
+              // 存储 JWT 到前端
+              const token = response.data.data.token;
+              const userId = response.data.data.userId;
+              localStorage.setItem('token', token);
+              localStorage.setItem('userId', userId);
+              // 在前端发出的所有请求的请求头中添加 JWT
+              axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-       // 存储 token（这里简单地存储在 localStorage 中，实际应用中可根据需求进行调整）
-       //localStorage.setItem('token', res.data.token);
-         //console.log(res.data.token);
-        
-        ElMessage({ type: 'success', message: '登录成功' });
-        router.replace({ path: '/' });
+              router.push('/');
+            } else {
+              console.error('登录失败', response.data.message);
+            }
+          })
+          .catch(error => {
+            console.error('登录失败', error);
+            // 在请求失败时给用户一个提示或者进行其他适当的处理
+            ElMessage.error('登录失败，请稍后重试');
+          });
       }
     });
-  };
+  }
 
-  // // 使用defineExpose方法暴露响应式数据和方法，以便在模板中使用
-  // defineExpose({ userInfo, rules, formRef, doLogin });
+  defineExpose({ userInfo, rules, formRef, doLogin, doRegister }); // 取消注释以暴露数据和方法
 </script>
 
-
-
-<template>
-    <div>
-      <header class="login-header">
-        <div class="container">
-          <h1 class="logo">
-            <RouterLink to="/">卓越快递</RouterLink>
-          </h1>
-          <RouterLink class="entry" to="/">
-            进入网站首页
-          </RouterLink>
-        </div>
-      </header>
-  
-      <section class="login-section">
-        <div class="wrapper">
-          <nav>
-            <a href="javascript:;">用户登录</a>
-          </nav>
-          <div class="account-box">
-            <div class="form">
-              <el-form ref="formRef" :model="userInfo" :rules="rules" status-icon>
-                <el-form-item prop="account" label="账户">
-                  <el-input v-model="userInfo.account" />
-                </el-form-item>
-                <el-form-item prop="password" label="密码">
-                  <el-input v-model="userInfo.password" />
-                </el-form-item>
-                <el-form-item prop="agree" label-width="22px">
-                  <el-checkbox v-model="userInfo.agree" size="large">
-                    我已同意隐私条款和服务条款
-                  </el-checkbox>
-                </el-form-item>
-                <el-button size="large" class="subBtn" @click="doLogin" >点击登录</el-button>
-              </el-form>
-            </div>
-          </div>
-        </div>
-      </section>
-  
-      <footer class="login-footer">
-        <div class="container">
-          <p>
-            <a href="javascript:;">关于我们</a>
-            <a href="javascript:;">帮助中心</a>
-            <a href="javascript:;">售后服务</a>
-            <a href="javascript:;">配送与验收</a>
-            <a href="javascript:;">商务合作</a>
-            <a href="javascript:;">搜索推荐</a>
-            <a href="javascript:;">友情链接</a>
-          </p>
-          <p>CopyRight &copy; 卓越快递</p>
-        </div>
-      </footer>
-    </div>
-  </template>
-  
   
 
 <style scoped lang='scss'>
@@ -341,9 +354,23 @@
   }
 }
 
-.subBtn {
-  background: skyblue;
-  width: 100%;
-  color: #fff;
-}
-</style> -->
+
+</style>
+
+
+
+ <!-- // 调用登录API发送登录请求，传入账户和密码信息，使用await等待返回结果
+      //    const res = await loginAPI({ account, password});
+      //    console.log(res); // 打印登录请求返回的结果
+      //    // 存储 token
+      //    authStore.setToken(res.data.token);
+      //    // 存储 account
+      //    authStore.setAccount(userInfo.value.account);
+
+      //    console.log(authStore.token)
+      //    console.log(authStore.account)
+
+      //  // 存储 token（这里简单地存储在 localStorage 中，实际应用中可根据需求进行调整）
+      //  //localStorage.setItem('token', res.data.token);
+      //    //console.log(res.data.token);
+         -->

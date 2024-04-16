@@ -1,16 +1,21 @@
 <script setup>
-import { useAuthStore } from '@/apis/user'; 
+// import { useAuthStore } from '@/apis/user'; 
 import { useRouter } from 'vue-router';
+// import { doLogin } from '@/components/login.vue'
 
-// 使用 account 和 token
-const authStore = useAuthStore();
+
 const router = useRouter(); // 将 useRouter 移至 setup 外部，确保在 setup 内正确使用
+const token = localStorage.getItem('token')
+const userId = localStorage.getItem('userId');
 
+console.log(token);
+console.log(userId);
 const confirm = () => {
   console.log('用户要退出登录了');
   // 退出登录业务实现
   // 1. 清除用户信息 触发 action
-  authStore.cleanUserAuthStore();
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
   // 2. 跳转到登录页
   router.push('/login'); // 确保 router 对象正确解析
 }
@@ -23,35 +28,40 @@ const confirm = () => {
       <!-- 将列表样式设置为无，这样就不会显示小圆点了 -->
       <ul  style="list-style-type: none;">
 <!-- 多模板渲染 区分登录状态和非登录状态-->
-        <template v-if="authStore.token">
+        <!-- <template v-if="authStore.token"> -->
+        <template v-if="token">  
 
-          <li>
-            <!--  表示点击后执行 JavaScript 代码，但未指定具体的操作 -->
-            <a href="javascript:;">
-              <img src="@/assets/user.png" alt="用户图标" style="width: 40px; height: 40px;">
-            </a>
+          <!-- 设置字体颜色 -->
+          <li  style="color: skyblue; font-size: 15px; margin-right: 10px;">
+            用户
           </li>
+
             <!-- 用户名 -->
-          <li><a href="javascript:;">{{ authStore.account }}</a></li>
+          <li><a >{{ userId  }}</a></li>
 
           <li>
             <!-- Vue 组件，用于显示确认框 -->
             <el-popconfirm @confirm="confirm" title="确认退出吗?" confirm-button-text="确认" cancel-button-text="取消">
               <template #reference>
-                <a href="javascript:;">退出登录</a>
+                <a>退出登录</a>
               </template>
             </el-popconfirm>
           </li>
 
-          <li><a href="javascript:;">查询订单</a></li>
-          <li><a href="javascript:;">会员中心</a></li>
+
+          <li><a>地址簿</a></li>
+          <li><a>会员中心</a></li>
+
+<!-- 
+          <li><a href="javascript:;">地址簿</a></li>
+          <li><a href="javascript:;">会员中心</a></li> -->
 
         </template>
 
         <template v-else>
-          <li><a href="javascript:;" @click="$router.push('/login')">请先登录</a></li>
-          <li><a href="javascript:;">帮助中心</a></li>
-          <li><a href="javascript:;">关于我们</a></li>
+          <li><a  @click="$router.push('/login')">请先登录</a></li>
+          <li><a >帮助中心</a></li>
+          <li><a>关于我们</a></li>
         </template>
       </ul>
     </div>
