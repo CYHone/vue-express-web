@@ -44,12 +44,25 @@
       </el-form-item>
 
     </el-form>
+
+ <!-- 使用 Vue3Barcode 组件生成条形码 -->
+ <vue3-barcode
+      :value="barcodeValue"
+      format="CODE128"
+      :width="2"
+      :height="60"
+      :margin="10"
+      :fontSize="12"
+      class="barcode-container"
+    />
+
   </div>
   <LayoutFooter />
 </template>
 
 <script setup>
-import { ref,watch } from 'vue'
+import { ref,onMounted } from 'vue'
+import Vue3Barcode from 'vue3-barcode';
 import LayoutNav from '../Layout/components/LayoutNav.vue'
 import LayoutHeader from '../Layout/components/LayoutHeader.vue'
 import LayoutFooter from '../Layout/components/LayoutFooter.vue'
@@ -59,6 +72,7 @@ import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 import { ElMessage,ElMessageBox} from 'element-plus';
 const router = useRouter();
 const shipId = localStorage.getItem('shipmentId');
+const barcodeValue = ref('') // 初始化条形码值为空
 const ruleForm = ref({
   shipmentID: shipId,
   receiverEmail: '',
@@ -84,6 +98,7 @@ const ruleForm = ref({
   axios.post('package/createPackage', requestData)
     .then(response => {
       console.log(response.data);
+      console.log("包裹订单为",response.data.data);
       if (response.data.code === 200) {
         showMessage('success', '包裹下单成功');
 
@@ -107,24 +122,17 @@ const ruleForm = ref({
                   ElMessageBox.alert('这个包裹运费为 ' + response.data.data + '元', '价格计算', {
                     // 配置确认按钮文本为 'OK'
                     confirmButtonText: 'OK',
-                    // 设置确认按钮的回调函数
-                    callback: (action) => {
-                      // 在消息提示框中显示用户点击的动作
-                      ElMessage({
-                        type: 'info',
-                        message: `action: ${action}`,
-                      });
-                    },
                   });
     
           } else {
-            console.error('价格计算失败', response.data.message);
-          
+            console.error('价格计算失败', response.data.message);    
           }
         });
 
-        //重置表单
-        resetForm();
+
+        barcodeValue.value = response.data.data;
+        // //重置表单
+        // resetForm();
 
       } else {
         console.error('下单失败', response.data.message);
@@ -135,7 +143,11 @@ const ruleForm = ref({
       console.error('请求失败', error);
       showMessage('error', '网络错误，请稍后再试');
     });
-}
+
+
+    // generateBarcode();
+
+  }
    
 const showMessage = (type, message) => {
   ElMessage({
@@ -144,7 +156,6 @@ const showMessage = (type, message) => {
     duration: 3000, // 持续时间，单位为毫秒，默认值为3000
   });
 };
-
 const resetForm = () => {
   // 将表单字段值（除了shipmentId）重置为初始状态
   Object.keys(ruleForm.value).forEach(key => {
@@ -156,6 +167,13 @@ const resetForm = () => {
 const doReturn = () => {
   router.push('/');
 }
+
+// const generateBarcode = () =>{
+//   barcodeValue.value = response.data.data;
+// }
+
+
+
 </script>
 
 <style scoped lang="scss">
@@ -165,5 +183,10 @@ const doReturn = () => {
   background-repeat: no-repeat;
   border-bottom: 1px solid #e4e4e4;
   padding: 20px;
+}
+.barcode-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 </style>

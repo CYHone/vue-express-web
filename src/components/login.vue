@@ -5,9 +5,9 @@
         <h1 class="logo">
           <RouterLink to="/">卓越快递</RouterLink>
         </h1>
-        <RouterLink class="entry" to="/">
+        <!-- <RouterLink class="entry" to="/">
           进入网站首页
-        </RouterLink>
+        </RouterLink> -->
       </div>
     </header>
 
