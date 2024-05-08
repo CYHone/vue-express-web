@@ -1,7 +1,19 @@
 <template>
   <LayoutNav />
   <LayoutHeader />
+  
   <div class="order" style="display: flex; justify-content: center; align-items: center;">
+
+   
+  <div class="order-form" style="height: 400px;padding-right: 50px;">
+      <el-steps :active="activeStep" finish-status="success" direction="vertical">
+        <el-step title="填写寄件信息" />
+        <el-step title="填写收件信息" />
+        <el-step title="选择类型和支付" />
+        <el-step title="创建运单完成" />
+        <el-step title="创建包裹" />
+    </el-steps>
+  </div>
     <el-form
       ref="ruleFormRef"
       style="max-width: 600px"
@@ -11,6 +23,7 @@
       class="demo-ruleForm"
       status-icon
     >
+
       <el-form-item label="寄件人" prop="senderID">
         <el-input v-model="ruleForm.senderName" />
       </el-form-item>
@@ -111,7 +124,7 @@
 
 
       <div class="mb-2 flex items-center text-sm">
-        <el-radio-group v-model="payMethod" class="ml-4">
+        <el-radio-group v-model="payMethod" class="ml-4" @change="payMethodChange">
           <el-radio value="cod_pending" size="large">货到付款</el-radio>
           <el-radio value="pending" size="large">预先⽀付</el-radio>
         </el-radio-group>
@@ -130,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref,watch } from 'vue'
+import { ref,watch,reactive } from 'vue'
 import LayoutNav from '../Layout/components/LayoutNav.vue'
 import LayoutHeader from '../Layout/components/LayoutHeader.vue'
 import LayoutFooter from '../Layout/components/LayoutFooter.vue'
@@ -139,6 +152,8 @@ import provinceOptions from '@/utils/pca-code.json';
 import { useRouter } from 'vue-router';
 import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 import { ElMessage } from 'element-plus';
+
+const activeStep = ref(0)
 const router = useRouter();
 const userId = localStorage.getItem('userId');
 const type = ref('')
@@ -184,6 +199,7 @@ const ruleForm = ref({
 
    // 处理省份选择变化
    const ohandleProvinceChange = () => {
+ 
     // 根据选择的省份更新城市选项
     const selectedProvince = provinceOptions.find(item => item.name === ruleForm.value.oprovince);  
     console.log('Selected Province:', ruleForm.value.oprovince);
@@ -195,6 +211,7 @@ const ruleForm = ref({
 
    // 处理城市选择变化
    const ohandleCityChange = () => {
+
     // 根据选择的城市更新区/县选项
     const selectedCity = cityOptions.value.find(item => item.name === ruleForm.value.ocity);
     console.log('Selected City:', ruleForm.value.ocity);
@@ -205,6 +222,8 @@ const ruleForm = ref({
   
   // 处理区/县选择变化
   const oselectDistrict = () => {
+    // 修改：更新 activeStep 的值为下一个步骤的索引值
+    activeStep.value = 1;
     // 根据选择的区/县更新区/县编码
     const selectedDistrict = districtOptions.value.find(item => item.name === ruleForm.value.odistrict);
     console.log('Selected District:', ruleForm.value.odistrict);
@@ -240,6 +259,8 @@ const ruleForm = ref({
   
   // 处理区/县选择变化
   const dselectDistrict = () => {
+    // 修改：更新 activeStep 的值为下一个步骤的索引值
+    activeStep.value = 2;
     // 根据选择的区/县更新区/县编码
     const selectedDistrict = districtOptions.value.find(item => item.name === ruleForm.value.ddistrict);
     console.log('Selected District:', ruleForm.value.ddistrict);
@@ -249,9 +270,14 @@ const ruleForm = ref({
     destination.value = ruleForm.value.code
   };
 
-
+  const payMethodChange = () => {
+    // 修改：根据用户的操作更新 activeStep 的值
+    activeStep.value = 3;
+  };
 
 const submitForm = () => {
+   // 修改：根据用户的操作更新 activeStep 的值
+   activeStep.value = 4;
     const requestData = {
       origin : origin.value,
       destination : destination.value,

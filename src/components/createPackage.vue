@@ -2,6 +2,13 @@
   <LayoutNav />
   <LayoutHeader />
   <div class="order" style="display: flex; justify-content: center; align-items: center;">
+    <div class="order-form" style="height: 300px; padding-right: 50px;">
+      <el-steps :active="activeStep" finish-status="success" direction="vertical">
+        <el-step title="创建运单完成" />
+        <el-step title="创建包裹" />
+        <el-step title="生成条形码" />
+    </el-steps>
+  </div>
     <el-form
       ref="ruleFormRef"
       style="max-width: 650px"
@@ -17,7 +24,7 @@
       </el-form-item>
 
       <el-form-item label=" 收件⼈姓名" prop="receiverName">
-        <el-input v-model="ruleForm.receiverName" placeholder="请输入收件⼈姓名" />
+        <el-input v-model="ruleForm.receiverName" placeholder="请输入收件⼈姓名"  />
       </el-form-item>
 
       <el-form-item label="收件⼈地址" prop="receiverAddress">
@@ -61,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref,onMounted } from 'vue'
+import { ref,watch,reactive } from 'vue'
 import Vue3Barcode from 'vue3-barcode';
 import LayoutNav from '../Layout/components/LayoutNav.vue'
 import LayoutHeader from '../Layout/components/LayoutHeader.vue'
@@ -70,6 +77,7 @@ import LayoutFooter from '../Layout/components/LayoutFooter.vue'
 import { useRouter } from 'vue-router';
 import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 import { ElMessage,ElMessageBox} from 'element-plus';
+const activeStep = ref(1)
 const router = useRouter();
 const shipId = localStorage.getItem('shipmentId');
 const barcodeValue = ref('') // 初始化条形码值为空
@@ -84,6 +92,10 @@ const ruleForm = ref({
 })
 
   const submitForm = () => {
+    //修改：更新 activeStep 的值为下一个步骤的索引值
+   activeStep.value = 3;
+
+    
   const requestData = {
     shipmentId: ruleForm.value.shipmentID,
     receiverEmail: ruleForm.value.receiverEmail,
@@ -99,6 +111,7 @@ const ruleForm = ref({
     .then(response => {
       console.log(response.data);
       console.log("包裹订单为",response.data.data);
+      
       if (response.data.code === 200) {
         showMessage('success', '包裹下单成功');
 
@@ -129,8 +142,10 @@ const ruleForm = ref({
           }
         });
 
+        
 
         barcodeValue.value = response.data.data;
+        console.log("条形码值为",barcodeValue.value);
         // //重置表单
         // resetForm();
 
@@ -150,6 +165,7 @@ const ruleForm = ref({
   }
    
 const showMessage = (type, message) => {
+
   ElMessage({
     type: type, // 消息类型，可以是 success、warning、info、error 中的一种
     message: message, // 消息内容
