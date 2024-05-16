@@ -8,6 +8,9 @@ const router = useRouter(); // 将 useRouter 移至 setup 外部，确保在 set
 const token = localStorage.getItem('token')
 const userId = localStorage.getItem('userId');
 const email = localStorage.getItem('email');
+ // 获取本地存储
+ const name = localStorage.getItem('username');
+console.log('用户名' + name);
 console.log(email);
 console.log(token);
 console.log(userId);
@@ -37,6 +40,7 @@ const confirm = () => {
           <li  style="color: skyblue; font-size: 15px; margin-right: 10px;">
             用户
           </li>
+          <li><a >{{ name }}</a></li>
 
             <!-- 用户名 -->
           <li><a >{{ email }}</a></li>
@@ -52,7 +56,7 @@ const confirm = () => {
 
 
           <li><a>地址簿</a></li>
-          <li><a>会员中心</a></li>
+          <li><router-link to="/user">用户中心</router-link></li>
 
 <!-- 
           <li><a href="javascript:;">地址簿</a></li>
@@ -70,7 +74,6 @@ const confirm = () => {
   </nav>
 </template>
 
-
 <style scoped lang="scss">
 .app-topnav {
   background: #333;
@@ -85,6 +88,7 @@ const confirm = () => {
         color: #cdcdcd;
         line-height: 1;
         display: inline-block;
+        text-decoration: none; /* 取消下划线 */
 
         i {
           font-size: 14px;

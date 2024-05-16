@@ -39,6 +39,11 @@ const router = createRouter({
       name:'运单查询',
       component:() => import('@/inquire/MapContainer.vue')
      },
+     {
+      path:'/user',
+      name:'用户',
+      component:() => import('@/components/user.vue')
+     }
   ]
 })
 
