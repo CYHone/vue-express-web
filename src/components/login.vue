@@ -116,6 +116,8 @@
             if (response.data.code === 200) {
               console.log('登录成功', response.data);
 
+              localStorage.setItem('email',email);
+
               // 存储 JWT 到前端
               const token = response.data.data.token;
               const userId = response.data.data.userId;

@@ -2,13 +2,13 @@
   <LayoutNav />
   <LayoutHeader />
   <div class="order" style="display: flex; justify-content: center; align-items: center;">
-    <div class="order-form" style="height: 300px; padding-right: 50px;">
-      <el-steps :active="activeStep" finish-status="success" direction="vertical">
-        <el-step title="创建运单完成" />
-        <el-step title="创建包裹" />
-        <el-step title="生成条形码" />
-    </el-steps>
-  </div>
+     <div class="order-form" style="height: 300px; padding-right: 50px;">
+        <el-steps :active="activeStep" finish-status="success" direction="vertical">
+          <el-step title="创建运单完成" />
+          <el-step title="创建包裹" />
+          <el-step title="生成条形码" />
+       </el-steps>
+    </div>
     <el-form
       ref="ruleFormRef"
       style="max-width: 650px"
@@ -19,9 +19,9 @@
       status-icon
     >
 
-      <el-form-item label="收件人ID" prop="receiverEmail">
+      <!-- <el-form-item label="收件人ID" prop="receiverEmail">
         <el-input v-model="ruleForm.receiverEmail" placeholder="选填(根据用户邮箱查询可知)" />
-      </el-form-item>
+      </el-form-item> -->
 
       <el-form-item label=" 收件⼈姓名" prop="receiverName">
         <el-input v-model="ruleForm.receiverName" placeholder="请输入收件⼈姓名"  />

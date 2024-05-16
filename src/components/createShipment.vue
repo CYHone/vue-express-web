@@ -16,7 +16,7 @@
   </div>
     <el-form
       ref="ruleFormRef"
-      style="max-width: 600px"
+      style="max-width: 800px"
       :model="ruleForm"
       :rules="rules"
       label-width="auto"
@@ -153,6 +153,7 @@ import { useRouter } from 'vue-router';
 import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 import { ElMessage } from 'element-plus';
 
+const email = localStorage.getItem('email');
 const activeStep = ref(0)
 const router = useRouter();
 const userId = localStorage.getItem('userId');
@@ -170,8 +171,9 @@ watch(payMethod, (newValue, oldValue) => {
   console.log('选中的支付方式:', newValue);
 });
 
-const ruleForm = ref({
-  senderName: userId,
+const ruleForm = ref({ 
+  // senderName: userId,
+  senderName: email,
   oprovince: '', // 省份
   ocity: '',     // 城市
   odistrict: '' ,// 区/县

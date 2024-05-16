@@ -7,7 +7,8 @@ import { useRouter } from 'vue-router';
 const router = useRouter(); // 将 useRouter 移至 setup 外部，确保在 setup 内正确使用
 const token = localStorage.getItem('token')
 const userId = localStorage.getItem('userId');
-
+const email = localStorage.getItem('email');
+console.log(email);
 console.log(token);
 console.log(userId);
 const confirm = () => {
@@ -16,6 +17,7 @@ const confirm = () => {
   // 1. 清除用户信息 触发 action
   localStorage.removeItem('token');
   localStorage.removeItem('userId');
+  localStorage.removeItem('email');
   // 2. 跳转到登录页
   router.push('/login'); // 确保 router 对象正确解析
 }
@@ -37,7 +39,7 @@ const confirm = () => {
           </li>
 
             <!-- 用户名 -->
-          <li><a >{{ userId  }}</a></li>
+          <li><a >{{ email }}</a></li>
 
           <li>
             <!-- Vue 组件，用于显示确认框 -->

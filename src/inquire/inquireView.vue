@@ -1,37 +1,213 @@
- <script setup>
- import { ref } from 'vue';
+<template>
+  <LayoutNav />
+  <LayoutHeader />
+  <div class="order">
+    <el-form style="display: flex;padding-left: 50px;">
+      <!-- 第一个 el-card -->
+      <el-card style="height: 500px; width: 600px; margin-right: 20px;">
+        <el-table :data="formattedShipmentIds" style="width: 100%" max-height="600px">
+          <el-table-column prop="id" label="运单号" width="300" />
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <!-- 点击按钮时调用 getShipmentInfo，并传递当前行的运单 ID -->
+              <el-button type="primary" @click="getShipmentInfo(scope.row.id)">查询包裹</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+      
+      <!-- 第二个 el-card -->
+      <el-card style="height: 500px; width: 800px;">
+        <el-table :data="shipmentInfo" style="width: 100%" max-height="600px">
+          <el-table-column prop="id" label="包裹号" width="150" />
+          <el-table-column prop="createDate" label="创建时间" width="300" />
+          <el-table-column prop="price" label="价格" width="120" />
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <el-button type="success" @click="open(scope.row)">查询物流</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </el-form>
+  </div>
+  <LayoutFooter />
+</template>
+
+<script setup>
+import { ref, onMounted, watchEffect } from 'vue';
 import LayoutNav from '../Layout/components/LayoutNav.vue'
 import LayoutHeader from '../Layout//components/LayoutHeader.vue'
 import LayoutFooter from '../Layout//components/LayoutFooter.vue'
-import { ElMessage,ElMessageBox } from 'element-plus';
-import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
+import { ElMessage } from 'element-plus';
+import axios from '@/utils/axios-config';
+import router from '@/router';
 
-const shipmentId = ref(''); // 使用 ref 来声明响应式变量
+const shipmentIds = ref([]);
+const shipmentInfo = ref([]);
+const userId = localStorage.getItem('userId');
+
+const getShipmentIds = () => {
+  axios.get(`shipment/getShipmentIds?id=${userId}`)
+    .then(response => {
+      console.log(response.data);
+      if (response.data.code === 200) {
+        ElMessage.success(response.data.message);
+        shipmentIds.value = response.data.data; // 更新 shipmentIds
+        console.log("运单数据"+shipmentIds.value);
+      } else {
+        ElMessage.error(response.data.message);
+      }
+    })
+    .catch(error => {
+      console.error('获取运单ID列表失败：', error);
+      ElMessage.error('获取运单ID列表失败，请重试');
+    });
+};
+
+const getShipmentInfo = (id) => {
+  axios.get(`shipment/getShipmentInfo?id=${id}`)
+    .then(response => {
+      if (response.data.code === 200) {
+        ElMessage.success('成功获取运单信息');
+        const info = response.data.data.shipment;
+        shipmentInfo.value = [info]; // 转换为数组格式
+        console.log(info);
+        console.log(info.id);
+      } else {
+        ElMessage.error('未找到该运单信息');
+      }
+    })
+    .catch(error => {
+      console.error('获取运单信息失败：', error);
+      ElMessage.error('获取运单信息失败，请重试');
+    });
+};
+
+onMounted(() => {
+  // 当组件挂载时调用获取运单ID的函数
+  getShipmentIds();
+});
+
+// 将每个运单号包装成对象，以符合表格的数据格式要求
+const formattedShipmentIds = ref([]);
+
+watchEffect(() => {
+  formattedShipmentIds.value = shipmentIds.value.map(id => ({ id }));
+});
+
+
+const open = (row) => {
+  // 编程式导航到目标页面，并传递参数 packageId
+  router.push({ path: "/inquire/MapContainer", query: { packageId: row.id } });
+};
+
+</script>
+
+
+
+
+<!-- <script setup>
+import { ref, onMounted } from 'vue';
+import LayoutNav from '../Layout/components/LayoutNav.vue'
+import LayoutHeader from '../Layout//components/LayoutHeader.vue'
+import LayoutFooter from '../Layout//components/LayoutFooter.vue'
+import { ElMessage, ElMessageBox } from 'element-plus';
+import axios from '@/utils/axios-config';
+import router from '@/router';
+const shipmentId = ref('');
+const userId = localStorage.getItem('userId');
+
+
+
+const getShipmentIds = () => {
+  axios.get(`shipment/getShipmentIds?id=${userId}`)
+    .then(response => {
+      console.log(response.data);
+      if (response.data.code === 200) {
+        ElMessage.success(response.data.message);
+        shipmentId.value = response.data.data; // 直接更新 shipmentId
+
+        console.log("运单数据"+shipmentId.value);
+      } else {
+        ElMessage.error(response.data.message);
+      }
+    })
+    .catch(error => {
+      console.error('获取运单ID列表失败：', error);
+      ElMessage.error('获取运单ID列表失败，请重试');
+    });
+};
+
+onMounted(() => {
+  // 当组件挂载时调用获取运单ID的函数
+  getShipmentIds();
+});
+
+</script> 
+
+<template>
+  <LayoutNav />
+  <LayoutHeader />
+  <div class="order">
+    <el-form
+      ref="ruleFormRef"
+      style="max-width: 600px"
+      :model="ruleForm"
+      :rules="rules"
+      label-width="auto"
+      class="demo-ruleForm"
+      status-icon
+    >
+    <el-card style="height: 300px; width: 800px;">
+        <el-table :data="[shipmentId]" style="width: 100%" max-height="600px">
+          <el-table-column prop="id" label="运单号" width="300" />
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <el-button type="primary" @click="open(scope.row)">查询物流</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </el-form>
+  </div>
+  <LayoutFooter />
+</template> -->
+
+
+
+<!-- 
+<script setup>
+import { ref } from 'vue';
+import LayoutNav from '../Layout/components/LayoutNav.vue'
+import LayoutHeader from '../Layout//components/LayoutHeader.vue'
+import LayoutFooter from '../Layout//components/LayoutFooter.vue'
+import { ElMessage, ElMessageBox } from 'element-plus';
+import axios from '@/utils/axios-config';
+import router from '@/router';
+
+const shipmentId = ref('');
 const id = ref('');
-const packageId = ref('');
-const packageId1 = ref('');
-const email = ref('');
+const shipmentInfo = ref([]); // 改为数组格式
 
 const getShipmentIds = () => {
   axios.get(`shipment/getShipmentIds?id=${id.value}`)
     .then(response => {
-      // 处理获取到的运单ID列表
       console.log(response.data);
       if (response.data.code === 200) {
-        ElMessage.success(response.data.message); // 成功获取消息
-        const shipmentIds = response.data.data; // 获取成功时的运单 ID 列表
-        showShipmentIdsDialog(shipmentIds); // 调用展示运单 ID 列表的弹窗函数
+        ElMessage.success(response.data.message);
+        const shipmentIds = response.data.data;
+        showShipmentIdsDialog(shipmentIds);
       } else {
-        ElMessage.error(response.data.message); // 获取失败消息
+        ElMessage.error(response.data.message);
       }
     })
     .catch(error => {
-      // 处理错误
       console.error('获取运单ID列表失败：', error);
       ElMessage.error('获取运单ID列表失败，请重试');
-   });
+    });
 };
-// 展示运单 ID 列表的弹窗
+
 const showShipmentIdsDialog = (shipmentIds) => {
   ElMessageBox.alert(
     `
@@ -53,143 +229,32 @@ const showShipmentIdsDialog = (shipmentIds) => {
 const getShipmentInfo = () => {
   axios.get(`shipment/getShipmentInfo?id=${shipmentId.value}`)
     .then(response => {
-      // 处理获取到的运单信息
-      const shipmentInfo = response.data.data.shipment; // 获取成功时的运单信息
       if (response.data.code === 200) {
-        ElMessage.success('成功获取运单信息'); // 成功获取消息
-        console.log(shipmentInfo); // 输出运单信息到控制台
-        console.log(shipmentInfo.id); // 输出运单ID到控制台
-        showShipmentInfoDialog(shipmentInfo); // 调用展示运单信息的弹窗函数
+        ElMessage.success('成功获取运单信息');
+        const info = response.data.data.shipment;
+        shipmentInfo.value = [info]; // 转换为数组格式
+        console.log(info);
+        console.log(info.id);
       } else {
-        ElMessage.error('未找到该运单信息'); // 获取失败消息
+        ElMessage.error('未找到该运单信息');
       }
     })
     .catch(error => {
-      // 处理错误
       console.error('获取运单信息失败：', error);
       ElMessage.error('获取运单信息失败，请重试');
     });
 };
-const showShipmentInfoDialog = (shipmentInfo) => {
-  ElMessageBox.alert(
-    `
-      <div>
-        <p>以下是您的包裹ID信息：</p>
-        <ul>
-          <li>包裹ID: ${shipmentInfo.id}</li>
-          <li>创建日期: ${shipmentInfo.createDate}</li>
-          <li>始发地: ${shipmentInfo.origin}</li>
-          <li>目的地: ${shipmentInfo.destination}</li>
-          <li>价格: ${shipmentInfo.price}</li>
-          <li>状态: ${shipmentInfo.status}</li>
-          <li>顾客ID: ${shipmentInfo.customerId}</li>
-          <li>类型: ${shipmentInfo.type}</li>
-        </ul>
-      </div>
-    `,
-    '运单信息',
-    {
-      dangerouslyUseHTMLString: true,
-      confirmButtonText: '确定',
-    }
-  );
-};
-const getCustomerByEmail = () => {
-  axios.get(`customer/getCustomerByEmail?email=${email.value}`)
 
-    .then(response => {
-      if (response.data.code === 200){
-        const customerInfo = response.data.data; 
-        console.log(customerInfo);
-        // 处理获取到的用户信息
-        console.log(response.data);
-        console.log(response.data.data.id);
-        showCustomerIdDialog(response.data.data.id)
-        localStorage.setItem('customerId', response.data.data.id);
-
-      }else {
-        ElMessage.error('查询用户信息失败'); // 获取失败消息
-      }
-    })
-    .catch(error => {
-      // 处理错误
-      console.error('查询用户信息失败：', error);
-    });
-};
-const showCustomerIdDialog = (customerId) => {
-  ElMessageBox.alert(`您需要的用户ID是：${customerId}`, '用户ID信息', {
-    confirmButtonText: '确定',
-  });
-};
-const getPackageById = () => {
-  axios.get(`package/getPackageById?id=${packageId1.value}`)
-    .then(response => {
-      // 处理获取到的包裹信息
-      const packageInfo = response.data.data; // 获取成功时的包裹信息
-      if (response.data.code === 200) {
-        ElMessage.success('成功获取包裹信息'); // 成功获取消息
-        console.log(packageInfo); // 输出包裹信息到控制台
-        showPackageDialog(packageInfo)
-      }
-      else {
-        ElMessage.error('未找到该包裹信息'); // 获取失败消息
-      }
-    })
-    .catch(error => {
-      // 处理错误
-      console.error('获取包裹信息失败：', error);
-      ElMessage.error('获取包裹信息失败，请重试');
-    });
+const open = (row) => {
+  // 编程式导航到目标页面，并传递参数 packageId
+  router.push({ path: "/inquire/MapContainer", query: { packageId: row.id } });
 };
 
-const showPackageDialog = (packageInfo) =>{
-  ElMessageBox.alert(
-    `
-      <div>
-        <p>以下是您的包裹信息：</p>
-        <ul>
-          <li>收货人: ${packageInfo.receiverName}</li>
-          <li>收货人电话: ${packageInfo.receiverPhone}</li>
-          <li>运单ID: ${packageInfo.shipmentId}</li>
-          <li>尺寸: ${packageInfo.size}</li>
-          <li>付款方式: ${packageInfo.status}</li>
-          <li>重量: ${packageInfo.weight}</li>
-        </ul>
-      </div>
-    `,
-    '运单信息',
-    {
-      dangerouslyUseHTMLString: true,
-      confirmButtonText: '确定',
-    }
-  );
-}
-
-const getPackageLocation = () => {
-  axios.get(`package/getPackageLocation?id=${packageId.value}`)
-    .then(response => {
-      // 处理获取到的包裹位置历史信息
-      const locationHistory = response.data.data; // 获取成功时的位置历史信息
-      if (response.data.code === 200) {
-        ElMessage.success('成功获取包裹地理位置历史信息'); // 成功获取消息
-        console.log(locationHistory); // 输出位置历史信息到控制台
-        // 在此处处理位置历史信息，例如展示在页面上或者其他操作
-      } else {
-        ElMessage.error('未找到该包裹地理位置历史信息'); // 获取失败消息
-      }
-    })
-    .catch(error => {
-      // 处理错误
-      console.error('获取包裹地理位置历史信息失败：', error);
-      ElMessage.error('获取包裹地理位置历史信息失败，请重试');
-    });
-};
+</script> -->
 
 
 
-</script>
-
-<template>
+<!-- <template>
   <LayoutNav />
   <LayoutHeader />
   <div class="order">
@@ -202,49 +267,41 @@ const getPackageLocation = () => {
       class="demo-ruleForm"
       status-icon
     >
-
-    <el-form-item label="获取运单ID" prop="id">
+      <el-form-item label="获取运单ID" prop="id">
         <div class="input-button-container">
           <el-input v-model="id" placeholder="请输入用户ID" />
           <el-button type="primary" @click="getShipmentIds">查询</el-button>
         </div>
       </el-form-item>
 
-    <el-form-item label="获取运单和附属包裹信息" prop="shipmentId">
+      <el-form-item label="获取包裹信息" prop="shipmentId">
         <div class="input-button-container">
           <el-input v-model="shipmentId" placeholder="请输入运单ID" />
           <el-button type="primary" @click="getShipmentInfo">查询</el-button>
         </div>
       </el-form-item>
 
-      <el-form-item label="获取包裹信息" prop="packageId1">
-        <div class="input-button-container">
-          <el-input v-model="packageId1" placeholder="请输入包裹ID" />
-          <el-button type="primary" @click="getPackageById">查询</el-button>
-        </div>
-      </el-form-item>
-
-      <el-form-item label="获取包裹位置" prop="packageId">
-        <div class="input-button-container">
-          <el-input v-model="packageId" placeholder="请输入包裹ID"/>
-          <el-button type="primary" @click="getPackageLocation">查询</el-button>
-        </div>
-      </el-form-item>
-
-      <el-form-item label="根据邮箱查询用户ID" prop="email">
-        <div class="input-button-container">
-          <el-input v-model="email" placeholder="请输入用户邮箱" ref="emailInput" />
-          <el-button type="primary" @click="getCustomerByEmail">查询</el-button>
-        </div>
-      </el-form-item>
-
+      <el-card  style="height: 300px; width: 800px;">  
+        <el-table :data="shipmentInfo" style="width: 100%" max-height="600px">
+          <el-table-column prop="id" label="包裹号" width="150" />
+          <el-table-column prop="createDate" label="创建时间" width="300" />
+          <el-table-column prop="price" label="价格" width="120" />
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              
+               <el-button type="primary" @click="open(scope.row)">查询物流</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
     </el-form>
   </div>
   <LayoutFooter />
-</template>
+</template> -->
 
-<style scoped lang="scss">
+<!-- <style scoped lang="scss">
 .order {
+  background: url('src/assets/background.jpg');
   display: flex;
   justify-content: center;
   align-items: center;
@@ -260,6 +317,7 @@ const getPackageLocation = () => {
 }
 
 .input-button-container el-input {
-  margin-right: 10px; /* 调整 input 和 button 之间的间距 */
+  
+  margin-right: 10px;
 }
-</style>
+</style> -->
