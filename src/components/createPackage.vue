@@ -39,9 +39,15 @@
         <el-input v-model="ruleForm.weight" placeholder="请输入包裹重量(kg)"/>
       </el-form-item>
 
+      
+
       <el-form-item label="包裹尺寸" prop="size">
-        <el-input v-model="ruleForm.size" placeholder="请输入尺寸(cm,cm,cm(英))" />
-      </el-form-item>
+          <el-input v-model="sizeX" placeholder="长(cm)" style="width: 100px;"></el-input>
+          <span style="margin: 0 5px;">,</span>
+          <el-input v-model="sizeY" placeholder="宽(cm)" style="width: 100px;"></el-input>
+          <span style="margin: 0 5px;">,</span>
+          <el-input v-model="sizeZ" placeholder="高(cm)" style="width: 100px;"></el-input>
+        </el-form-item>
 
       <el-form-item>
         <el-button type="primary" size="large" @click="submitForm()">下单</el-button>
@@ -88,13 +94,21 @@ const ruleForm = ref({
   receiverAddress: '',
   receiverPhone: '',
   weight: '',
-  size: '',
+  
 })
+
+
+const sizeX = ref('');
+const sizeY = ref('');
+const sizeZ = ref('');
+
+
 
   const submitForm = () => {
     //修改：更新 activeStep 的值为下一个步骤的索引值
    activeStep.value = 3;
-
+ // 合并尺寸数据
+ const size = `${sizeX.value},${sizeY.value},${sizeZ.value}`;
     
   const requestData = {
     shipmentId: ruleForm.value.shipmentID,
@@ -103,7 +117,8 @@ const ruleForm = ref({
     receiverAddress: ruleForm.value.receiverAddress,
     receiverPhone: ruleForm.value.receiverPhone,
     weight: ruleForm.value.weight,
-    size: ruleForm.value.size,
+    //size: ruleForm.value.size,
+    size: size,
   };
   console.log("请求数据为", requestData);
 

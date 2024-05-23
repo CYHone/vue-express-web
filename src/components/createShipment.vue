@@ -153,10 +153,11 @@ import { useRouter } from 'vue-router';
 import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 import { ElMessage } from 'element-plus';
 
-const email = localStorage.getItem('email');
+// const email = localStorage.getItem('email');
 const activeStep = ref(0)
 const router = useRouter();
 const userId = localStorage.getItem('userId');
+const name = localStorage.getItem('username');
 const type = ref('')
 const payMethod = ref('')
 const origin = ref('')
@@ -173,7 +174,8 @@ watch(payMethod, (newValue, oldValue) => {
 
 const ruleForm = ref({ 
   // senderName: userId,
-  senderName: email,
+  // senderName: email,
+  senderName: name,
   oprovince: '', // 省份
   ocity: '',     // 城市
   odistrict: '' ,// 区/县

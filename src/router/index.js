@@ -43,6 +43,11 @@ const router = createRouter({
       path:'/user',
       name:'用户',
       component:() => import('@/components/user.vue')
+     },
+     {
+      path:"/address",
+      name:'地址簿',
+      component:() => import('@/components/address.vue')
      }
   ]
 })

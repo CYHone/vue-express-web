@@ -55,7 +55,7 @@ const confirm = () => {
           </li>
 
 
-          <li><a>地址簿</a></li>
+          <li><router-link to="/address">地址簿</router-link></li>
           <li><router-link to="/user">用户中心</router-link></li>
 
 <!-- 
