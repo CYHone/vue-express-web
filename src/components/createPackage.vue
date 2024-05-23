@@ -19,6 +19,25 @@
       status-icon
     >
 
+
+    <el-form-item label="地址簿中选择">
+        <el-select v-model="selectedAddress" style="width: 200px;" placeholder="从地址簿中选择收货人" @change="handleAddressChange">
+          <el-option v-for="address in options" :key="address.adname" :label="address.adname" :value="address"/>
+        </el-select>
+      </el-form-item>
+      
+    <!-- <el-form-item label="地址簿中选择">
+      <el-select v-model="value" placeholder="从地址簿中选择收货人" style="width: 200px;">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+          :disabled="item.disabled"
+        />
+      </el-select>
+    </el-form-item> -->
+   
       <!-- <el-form-item label="收件人ID" prop="receiverEmail">
         <el-input v-model="ruleForm.receiverEmail" placeholder="选填(根据用户邮箱查询可知)" />
       </el-form-item> -->
@@ -34,6 +53,8 @@
       <el-form-item label="收件⼈电话" prop="receiverPhone">
         <el-input v-model="ruleForm.receiverPhone" placeholder="请输入收件⼈电话" />
       </el-form-item>
+
+
 
       <el-form-item label="包裹重量" prop="weight">
         <el-input v-model="ruleForm.weight" placeholder="请输入包裹重量(kg)"/>
@@ -74,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref,watch,reactive } from 'vue'
+import { ref,watch,reactive,onMounted } from 'vue'
 import Vue3Barcode from 'vue3-barcode';
 import LayoutNav from '../Layout/components/LayoutNav.vue'
 import LayoutHeader from '../Layout/components/LayoutHeader.vue'
@@ -83,6 +104,62 @@ import LayoutFooter from '../Layout/components/LayoutFooter.vue'
 import { useRouter } from 'vue-router';
 import axios from '@/utils/axios-config' // 导入全局配置的 axios 实例
 import { ElMessage,ElMessageBox} from 'element-plus';
+
+const id = localStorage.getItem('userId');
+const selectedAddress = ref(null);
+    const options = ref([]);
+
+    // 获取地址数据
+    const getAddress = () => {
+      axios.get(`/customer/getAddress?id=${id}`).then(res => {
+        options.value = res.data.data.map(detailAddress => JSON.parse(detailAddress));
+        // 在获取到地址数据后，再添加固定选项到最后一行
+        options.value.push({ adname: '请选择地址', adphone: '', addetail: '' });
+      }).catch(error => {
+        console.error('获取地址失败：', error);
+      });
+    };
+
+    const handleAddressChange = () => {
+      if (selectedAddress.value) {
+        ruleForm.value.receiverName = selectedAddress.value.adname;
+        ruleForm.value.receiverAddress = selectedAddress.value.addetail;
+        ruleForm.value.receiverPhone = selectedAddress.value.adphone;
+      } else {
+        ruleForm.value.receiverName = '';
+        ruleForm.value.receiverAddress = '';
+        ruleForm.value.receiverPhone = '';
+      }
+    };
+
+    onMounted(() => {
+      getAddress(); // 在组件挂载时获取地址数据
+    });
+// const id = localStorage.getItem('userId');
+
+//     const value = ref('');
+//     const options = ref([]);
+
+//     // 获取地址数据
+//     const getAddress = () => {
+//       axios.get(`/customer/getAddress?id=${id}`).then(res => {
+//         const addressData = res.data.data.map(detailAddress => JSON.parse(detailAddress));
+//         options.value = addressData.map(address => ({
+//           value: address.adname, // 使用 adname 作为 value
+//           label: address.adname, // 使用 adname 作为 label
+//         }));
+//       }).catch(error => {
+//         console.error('获取地址失败：', error);
+//       });
+//     };
+
+//     onMounted(() => {
+//       getAddress(); // 在组件挂载时获取地址数据
+//     });
+
+
+
+
 const activeStep = ref(1)
 const router = useRouter();
 const shipId = localStorage.getItem('shipmentId');
@@ -109,7 +186,7 @@ const sizeZ = ref('');
    activeStep.value = 3;
  // 合并尺寸数据
  const size = `${sizeX.value},${sizeY.value},${sizeZ.value}`;
-    
+    console.log("尺寸为"+size);
   const requestData = {
     shipmentId: ruleForm.value.shipmentID,
     receiverEmail: ruleForm.value.receiverEmail,
@@ -138,7 +215,7 @@ const sizeZ = ref('');
           origin: or,
           destination: dt,
           weight: ruleForm.value.weight,
-          size: ruleForm.value.size,
+          size: size,
           type: tp,
         }
 
