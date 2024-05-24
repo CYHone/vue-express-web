@@ -145,6 +145,8 @@ const saveAddress = (index, rowData) => {
     .then(response => {
       // 成功后更新地址列表数据
       getAddress();
+       // 刷新页面
+       window.location.reload();
     })
     .catch(error => {
       // 处理错误
