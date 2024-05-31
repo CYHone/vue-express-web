@@ -35,7 +35,7 @@ const router = createRouter({
       component:() => import('@/inquire/inquireView.vue')
      },
      {
-      path:'/inquire/MapContainer',
+      path:'/MapContainer',
       name:'运单查询',
       component:() => import('@/inquire/MapContainer.vue')
      },
@@ -48,6 +48,11 @@ const router = createRouter({
       path:"/address",
       name:'地址簿',
       component:() => import('@/components/address.vue')
+     },
+     {
+      path:'/1',
+      name:'悬浮球',
+      component:() => import('@/inquire/1.vue')
      }
   ]
 })
