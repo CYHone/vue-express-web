@@ -6,7 +6,7 @@
         <el-steps :active="activeStep" finish-status="success" direction="vertical">
           <el-step title="创建运单完成" />
           <el-step title="创建包裹" />
-          <el-step title="生成条形码" />
+          <el-step title="创建包裹完成" />
        </el-steps>
     </div>
     <el-form
@@ -25,22 +25,6 @@
           <el-option v-for="address in options" :key="address.adname" :label="address.adname" :value="address"/>
         </el-select>
       </el-form-item>
-      
-    <!-- <el-form-item label="地址簿中选择">
-      <el-select v-model="value" placeholder="从地址簿中选择收货人" style="width: 200px;">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-          :disabled="item.disabled"
-        />
-      </el-select>
-    </el-form-item> -->
-   
-      <!-- <el-form-item label="收件人ID" prop="receiverEmail">
-        <el-input v-model="ruleForm.receiverEmail" placeholder="选填(根据用户邮箱查询可知)" />
-      </el-form-item> -->
 
       <el-form-item label=" 收件⼈姓名" prop="receiverName">
         <el-input v-model="ruleForm.receiverName" placeholder="请输入收件⼈姓名"  />
@@ -135,30 +119,6 @@ const selectedAddress = ref(null);
     onMounted(() => {
       getAddress(); // 在组件挂载时获取地址数据
     });
-// const id = localStorage.getItem('userId');
-
-//     const value = ref('');
-//     const options = ref([]);
-
-//     // 获取地址数据
-//     const getAddress = () => {
-//       axios.get(`/customer/getAddress?id=${id}`).then(res => {
-//         const addressData = res.data.data.map(detailAddress => JSON.parse(detailAddress));
-//         options.value = addressData.map(address => ({
-//           value: address.adname, // 使用 adname 作为 value
-//           label: address.adname, // 使用 adname 作为 label
-//         }));
-//       }).catch(error => {
-//         console.error('获取地址失败：', error);
-//       });
-//     };
-
-//     onMounted(() => {
-//       getAddress(); // 在组件挂载时获取地址数据
-//     });
-
-
-
 
 const activeStep = ref(1)
 const router = useRouter();
@@ -236,8 +196,8 @@ const sizeZ = ref('');
 
         
 
-        barcodeValue.value = response.data.data;
-        console.log("条形码值为",barcodeValue.value);
+        // barcodeValue.value = response.data.data;
+        // console.log("条形码值为",barcodeValue.value);
         // //重置表单
         // resetForm();
 

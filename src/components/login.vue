@@ -358,21 +358,3 @@
 
 
 </style>
-
-
-
- <!-- // 调用登录API发送登录请求，传入账户和密码信息，使用await等待返回结果
-      //    const res = await loginAPI({ account, password});
-      //    console.log(res); // 打印登录请求返回的结果
-      //    // 存储 token
-      //    authStore.setToken(res.data.token);
-      //    // 存储 account
-      //    authStore.setAccount(userInfo.value.account);
-
-      //    console.log(authStore.token)
-      //    console.log(authStore.account)
-
-      //  // 存储 token（这里简单地存储在 localStorage 中，实际应用中可根据需求进行调整）
-      //  //localStorage.setItem('token', res.data.token);
-      //    //console.log(res.data.token);
-         -->

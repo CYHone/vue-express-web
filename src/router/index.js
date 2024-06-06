@@ -49,11 +49,6 @@ const router = createRouter({
       name:'地址簿',
       component:() => import('@/components/address.vue')
      },
-     {
-      path:'/1',
-      name:'悬浮球',
-      component:() => import('@/inquire/1.vue')
-     }
   ]
 })
 

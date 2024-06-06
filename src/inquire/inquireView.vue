@@ -93,8 +93,6 @@ const showProgressBox = (id) => {
 };
 
 
-
-
 const addPackage = (id) => {
   console.log(id);
   localStorage.setItem('shipmentId', id);
