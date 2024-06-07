@@ -1,15 +1,5 @@
 # vue-express-web
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
+卓越快递物流项目-用户端
 ## Project Setup
 
 ```sh
@@ -39,3 +29,5 @@ pnpm test:unit
 ```sh
 pnpm lint
 ```
+![屏幕截图 2024-06-07 163903](https://github.com/CYHone/vue-express-web/assets/131361865/50dc5c71-b357-47a8-9bf8-9ad8c11754da)
+
