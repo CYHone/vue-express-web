@@ -39,3 +39,6 @@ pnpm test:unit
 ```sh
 pnpm lint
 ```
+![image](https://github.com/CYHone/vue-express-web/assets/131361865/2bf0159b-8538-4c75-9274-b49d26a6cf9b)
+
+![屏幕截图 2024-06-12 225651](https://github.com/CYHone/vue-express-web/assets/131361865/9fc70a88-e953-452e-9f69-0e41e48716ef)
