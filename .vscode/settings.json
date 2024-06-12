@@ -1,0 +1,6 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "javascript.validate.enable": "never"
+  }
+}
